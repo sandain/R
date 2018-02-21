@@ -34,25 +34,24 @@ vennplot <- function (x) {
   a.names <- rep ("",s)
 
   # Fill the array of comparisons.
-  c <- 0
+  h <- 0
   for (i in 1:n) {
     for (j in 1:numcombin (n, i)) {
-      c <- c + 1
+      h <- h + 1
+      # Figure out which columns need to match and not match.
       ac <- combn (colnames (x), i)[,j]
       nac <- setdiff (colnames (x), ac)
-      if (identical (nac, character (0))) nac = c ()
- 
-      a.names[c] <- paste (ac, collapse = "&")
+      # Figure out the rows that meet the match/not match requirements.
       ab <- rep (TRUE, nrow (x))
       for (k in 1:length (ac)) ab <- ab & x[,ac[k]]
       if (length (nac) > 0) for (k in 1:length (nac)) ab <- ab & !x[,nac[k]]
-      a[c] <- sum (ab)
+      # Sum the number of rows that meet the requirements.
+      a[h] <- sum (ab)
+      a.names[h] <- paste (ac, collapse = "&")
     }
   }
-
   # Assign the names of each comparison to the array.
   names (a) <- a.names
-
   # Plot the Venn diagram.
   va <- venneuler (a)
   plot (va)
@@ -75,14 +74,16 @@ if (! file.exists (dataFile)) {
 }
 
 # Load the data file.
-t <- read.table (dataFile, header = TRUE)
+data <- read.table (dataFile, header = TRUE)
 
 # Save the plot to a file.
 if (grepl (".png$", outputFile)) png (outputFile)
 if (grepl (".pdf$", outputFile)) pdf (outputFile)
 if (grepl (".svg$", outputFile)) svg (outputFile)
+if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
 
-vennplot (t)
+
+vennplot (data)
 title (title)
 
 # Finish the script.
