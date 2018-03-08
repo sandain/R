@@ -4,7 +4,7 @@ suppressPackageStartupMessages (
   library (venneuler)
 )
 
-usage <- "Usage: <Data file> <Output File> <Title>"
+usage <- "Usage: <Data file>  <Environment File> <Environmental Variable> <Output File> <Title>"
 
 #-----------------------------------------------------------------------------
 # Calculate the number of combinations for a given number of items.
@@ -23,7 +23,7 @@ numcombin <- function (n, i) {
 #-----------------------------------------------------------------------------
 vennplot <- function (x) {
   # Get the length of the data.
-  n <- length (x)
+  n <- ncol (x)
 
   # Calculate the number of combinations.
   s <- 0
@@ -62,19 +62,33 @@ vennplot <- function (x) {
 args <- commandArgs (trailingOnly = TRUE)
 
 # Verify the command line arguments.
-if (length (args) < 3) stop (usage)
+if (length (args) < 5) stop (usage)
 
 dataFile <- args[1]
-outputFile <- args[2]
-title <- args[3]
+envFile <- args[2]
+envVar <- args[3]
+outputFile <- args[4]
+title <- args[5]
 
-# Verify the data file exists.
-if (! file.exists (dataFile)) {
-  stop ("Data file not found.")
-}
+# Verify the data files exist.
+if (! file.exists (dataFile)) stop ("Data file not found.")
+if (! file.exists (envFile)) stop ("Environment file not found.")
 
-# Load the data file.
+# Load the data files.
 data <- read.table (dataFile, header = TRUE)
+env <- read.table (envFile, header = TRUE)
+
+# Remove rows and columns with no data.
+data <- data[rowSums (data) > 0,,drop = FALSE]
+data <- data[, colSums (data) > 0,drop = FALSE]
+
+envGroups <- env[! duplicated (env[,envVar]), envVar]
+data.env <- matrix (nrow = nrow (data), ncol = length (envGroups))
+rownames (data.env) <- rownames (data)
+colnames (data.env) <- envGroups
+for (i in 1: length (envGroups)) {
+  data.env[,envGroups[i]] <- rowSums (data[,env[,envVar] == envGroups[i]])
+}
 
 # Save the plot to a file.
 if (grepl (".png$", outputFile)) png (outputFile)
@@ -82,8 +96,7 @@ if (grepl (".pdf$", outputFile)) pdf (outputFile)
 if (grepl (".svg$", outputFile)) svg (outputFile)
 if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
 
-
-vennplot (data)
+vennplot (data.env)
 title (title)
 
 # Finish the script.
