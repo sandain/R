@@ -57,7 +57,7 @@ ordiellipse (data.plot, env[,envVar], kind="se", conf=0.99)
 
 # Draw sites from MDS output colored by environmental variable.
 for (i in 1: length (envGroups)) {
-  points (data.plot$sites[env[,envVar] == 1,], col="black", bg=colors[i], pch=21)
+  points (data.plot$sites[env[,envVar] == envGroups[i],], col="black", bg=colors[i], pch=21)
 }
 
 # Add labels to the sites.
