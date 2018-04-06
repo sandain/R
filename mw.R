@@ -1,4 +1,4 @@
-#!/usr/bin/Rscript
+#!/usr/bin/env Rscript
 
 usage <- "Usage: <Data file> <Environment File> <Environmental Variable>"
 
