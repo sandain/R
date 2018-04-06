@@ -87,7 +87,13 @@ data.env <- matrix (nrow = nrow (data), ncol = length (envGroups))
 rownames (data.env) <- rownames (data)
 colnames (data.env) <- envGroups
 for (i in 1: length (envGroups)) {
-  data.env[,envGroups[i]] <- rowSums (data[,env[,envVar] == envGroups[i]])
+  d <- data[,env[,envVar] == envGroups[i]]
+  if (is.null(ncol (d))) {
+    data.env[,envGroups[i]] <- d
+  }
+  else {
+    data.env[,envGroups[i]] <- rowSums (d)
+  }
 }
 
 # Save the plot to a file.
