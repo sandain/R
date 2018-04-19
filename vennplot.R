@@ -89,10 +89,10 @@ colnames (data.env) <- envGroups
 for (i in 1: length (envGroups)) {
   d <- data[,env[,envVar] == envGroups[i]]
   if (is.null(ncol (d))) {
-    data.env[,envGroups[i]] <- d
+    data.env[,i] <- d
   }
   else {
-    data.env[,envGroups[i]] <- rowSums (d)
+    data.env[,i] <- rowSums (d)
   }
 }
 
