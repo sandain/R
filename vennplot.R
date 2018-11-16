@@ -79,10 +79,15 @@ data <- read.table (dataFile, header = TRUE)
 env <- read.table (envFile, header = TRUE)
 
 # Remove rows and columns with no data.
+data <- data[,intersect (rownames(env), colnames(data)),drop = FALSE]
 data <- data[rowSums (data) > 0,,drop = FALSE]
 data <- data[, colSums (data) > 0,drop = FALSE]
+env <- env[colnames (data),, drop = FALSE]
 
+# Figure out the groups in the environment.
 envGroups <- env[! duplicated (env[,envVar]), envVar]
+envGroups <- envGroups[! is.na (envGroups)]
+
 data.env <- matrix (nrow = nrow (data), ncol = length (envGroups))
 rownames (data.env) <- rownames (data)
 colnames (data.env) <- envGroups
