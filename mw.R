@@ -23,6 +23,7 @@ env <- read.table (envFile, header = TRUE)
 # Remove rows and columns with no data.
 data <- data[rowSums (data) > 0,,drop = FALSE]
 data <- data[, colSums (data) > 0,drop = FALSE]
+env <- na.omit (env[colnames (data),])
 
 envGroups <- env[! duplicated (env[,envVar]), envVar]
 data.env <- matrix (nrow = nrow (data), ncol = length (envGroups))
