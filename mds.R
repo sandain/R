@@ -28,14 +28,18 @@ if (! file.exists (envFile)) stop ("Environment file not found.")
 data <- read.table (dataFile, header = TRUE)
 env <- read.table (envFile, header = TRUE)
 
+# Remove rows and columns with no data.
+data <- data[,intersect (rownames(env), colnames(data)),drop = FALSE]
+data <- data[rowSums (data) > 0,,drop = FALSE]
+data <- data[, colSums (data) > 0,drop = FALSE]
+env <- env[colnames (data),, drop = FALSE]
+
 # The main data file comes in transposed from what we need.
 data <- t (data)
 
-# Remove rows and columns with no data.
-data <- data[rowSums (data) > 0,,drop = FALSE]
-data <- data[, colSums (data) > 0,drop = FALSE]
-
+# Figure out the groups in the environment.
 envGroups <- env[! duplicated (env[,envVar]), envVar]
+envGroups <- envGroups[! is.na (envGroups)]
 
 # Save the plot to a file.
 if (grepl (".png$", outputFile)) png (outputFile)
