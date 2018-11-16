@@ -6,7 +6,7 @@ suppressPackageStartupMessages (
 
 usage <- "Usage: <Data File> <Environment File> <Environmental Variable> <Output File> <Title>"
 
-colors <- c ("red", "blue", "green", "purple", "orange")
+colors <- c ("red", "blue", "green", "purple", "orange", "pink", "magenta")
 
 # Load the command line arguments.
 args <- commandArgs (trailingOnly = TRUE)
