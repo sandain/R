@@ -21,6 +21,7 @@ data <- read.table (dataFile, header = TRUE)
 env <- read.table (envFile, header = TRUE)
 
 # Remove rows and columns with no data.
+data <- data[,intersect (rownames(env), colnames(data)),drop = FALSE]
 data <- data[rowSums (data) > 0,,drop = FALSE]
 data <- data[, colSums (data) > 0,drop = FALSE]
 env <- na.omit (env[colnames (data),])
@@ -30,7 +31,7 @@ data.env <- matrix (nrow = nrow (data), ncol = length (envGroups))
 rownames (data.env) <- rownames (data)
 colnames (data.env) <- envGroups
 for (i in 1: length (envGroups)) {
-  data.env[,envGroups[i]] <- rowSums (data[,env[,envVar] == envGroups[i]])
+  data.env[,envGroups[i]] <- rowSums (data[,env[,envVar] == envGroups[i], drop=FALSE])
 }
 
 ac <- combn (colnames (data.env), 2)
