@@ -12,7 +12,7 @@ colors <- c ("red", "blue", "green", "purple", "orange", "pink", "magenta")
 args <- commandArgs (trailingOnly = TRUE)
 
 # Verify the command line arguments.
-if (length (args) < 4) stop (usage)
+if (length (args) < 5) stop (usage)
 
 dataFile <- args[1]
 envFile <- args[2]
@@ -65,7 +65,6 @@ for (i in 1: length (envGroups)) {
   y <- data.plot$sites[env[,envVar] == envGroups[i],2]
   bg <- i %% (length (colors)+1)
   if (i == length (colors)) bg <- bg + 1
-
   points (x=x, y=y, col="black", bg=colors[bg], pch=21)
 }
 
