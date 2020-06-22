@@ -4,18 +4,17 @@ suppressPackageStartupMessages (
   library (vegan)
 )
 
-usage <- "Usage: <Data File> <Environment File> <Environmental Variable> <Output File>"
+usage <- "Usage: <Data File> <Environment File> <Environmental Variable>"
 
 # Load the command line arguments.
 args <- commandArgs (trailingOnly = TRUE)
 
 # Verify the command line arguments.
-if (length (args) < 4) stop (usage)
+if (length (args) < 3) stop (usage)
 
 dataFile <- args[1]
 envFile <- args[2]
 envVar <- args[3]
-outputFile <- args[4]
 
 # Verify the data files exist.
 if (! file.exists (dataFile)) stop ("Data file not found.")
@@ -34,20 +33,22 @@ env <- na.omit (env[colnames (data),])
 # The main data file comes in transposed from what we need.
 data <- t (data)
 
-# Run anosim.
-data.ano <- anosim (data, env[,envVar], distance = "bray")
+# Run anosim all groups.
 
-# Output the anosim summary.
-summary (data.ano)
+print ("All")
+print (anosim (data, env[,envVar], distance = "bray"))
 
-# Save the plot to a file.
-if (grepl (".png$", outputFile)) png (outputFile)
-if (grepl (".pdf$", outputFile)) pdf (outputFile)
-if (grepl (".svg$", outputFile)) svg (outputFile)
-if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
-
-# Draw the anosim plot.
-plot (data.ano)
+# Run anosim between groups.
+envGroups <- env[! duplicated (env[,envVar]), envVar]
+ac <- combn (envGroups, 2)
+for (i in 1:ncol (ac)) {
+  print (paste (ac[,i], collapse = "&"))
+  x <- as.numeric(rowSums(data[,env[,envVar] == ac[1,i], drop=FALSE]))
+  y <- as.numeric(rowSums(data[,env[,envVar] == ac[2,i], drop=FALSE]))
+#  x <- as.numeric(data[,env[,envVar] == ac[1,i], drop=FALSE])
+#  y <- as.numeric(data[,env[,envVar] == ac[2,i], drop=FALSE])
+  print (anosim (data[env[,envVar] == ac[1,i] | env[,envVar] == ac[2,i],], env[,envVar], distance = "bray"))
+}
 
 # Finish the script.
 q ()
