@@ -55,6 +55,21 @@ for (i in 1: nrow (data)) {
   d$invsimpson[i] <- diversity (data[i,], index = "invsimpson")
 }
 
+# Calculate the average of the diversity indicies.
+a <- data.frame (
+  row.names = envGroups,
+  category = envGroups,
+  chao1 = double (length (envGroups)),
+  shannon = double (length (envGroups)),
+  simpson = double (length (envGroups)),
+  invsimpson = double (length (envGroups))
+)
+for (i in 1: length (envGroups)) {
+  a$chao1[i] <- mean(d[d[,envVar] == envGroups[i], "chao1"])
+  a$shannon[i] <- mean(d[d[,envVar] == envGroups[i], "shannon"])
+  a$simpson[i] <- mean(d[d[,envVar] == envGroups[i], "simpson"])
+  a$invsimpson[i] <- mean(d[d[,envVar] == envGroups[i], "invsimpson"])
+}
 
 # Save the plot to a file.
 if (grepl (".png$", outputFile)) png (outputFile)
@@ -62,10 +77,10 @@ if (grepl (".pdf$", outputFile)) pdf (outputFile)
 if (grepl (".svg$", outputFile)) svg (outputFile)
 if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
 
-p1 <- ggplot(d, aes(x=category, y=chao1)) + geom_dotplot(binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + scale_y_continuous(trans='log10')
-p2 <- ggplot(d, aes(x=category, y=shannon)) + geom_dotplot(binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + scale_y_continuous(trans='log10')
-p3 <- ggplot(d, aes(x=category, y=simpson)) + geom_dotplot(binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + scale_y_continuous(trans='log10')
-p4 <- ggplot(d, aes(x=category, y=invsimpson)) + geom_dotplot(binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + scale_y_continuous(trans='log10')
+p1 <- ggplot() + geom_col(data=a, aes(x=category, y=chao1)) + geom_dotplot(data=d, aes(x=category, y=chao1), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
+p2 <- ggplot() + geom_col(data=a, aes(x=category, y=shannon)) + geom_dotplot(data=d, aes(x=category, y=shannon), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
+p3 <- ggplot() + geom_col(data=a, aes(x=category, y=simpson)) + geom_dotplot(data=d, aes(x=category, y=simpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
+p4 <- ggplot() + geom_col(data=a, aes(x=category, y=invsimpson)) + geom_dotplot(data=d, aes(x=category, y=invsimpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
 
 grid.arrange (p1, p2, p3, p4, nrow = 2)
 
