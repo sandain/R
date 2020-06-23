@@ -43,10 +43,6 @@ envGroups <- env[! duplicated (env[,envVar]), envVar]
 ac <- combn (envGroups, 2)
 for (i in 1:ncol (ac)) {
   print (paste (ac[,i], collapse = "&"))
-  x <- as.numeric(rowSums(data[,env[,envVar] == ac[1,i], drop=FALSE]))
-  y <- as.numeric(rowSums(data[,env[,envVar] == ac[2,i], drop=FALSE]))
-#  x <- as.numeric(data[,env[,envVar] == ac[1,i], drop=FALSE])
-#  y <- as.numeric(data[,env[,envVar] == ac[2,i], drop=FALSE])
   print (anosim (data[env[,envVar] == ac[1,i] | env[,envVar] == ac[2,i],], env[,envVar], distance = "bray"))
 }
 
