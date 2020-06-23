@@ -65,10 +65,10 @@ a <- data.frame (
   invsimpson = double (length (envGroups))
 )
 for (i in 1: length (envGroups)) {
-  a$chao1[i] <- mean(d[d[,envVar] == envGroups[i], "chao1"])
-  a$shannon[i] <- mean(d[d[,envVar] == envGroups[i], "shannon"])
-  a$simpson[i] <- mean(d[d[,envVar] == envGroups[i], "simpson"])
-  a$invsimpson[i] <- mean(d[d[,envVar] == envGroups[i], "invsimpson"])
+  a$chao1[i] <- mean(d[d[,"category"] == envGroups[i], "chao1"])
+  a$shannon[i] <- mean(d[d[,"category"] == envGroups[i], "shannon"])
+  a$simpson[i] <- mean(d[d[,"category"] == envGroups[i], "simpson"])
+  a$invsimpson[i] <- mean(d[d[,"category"] == envGroups[i], "invsimpson"])
 }
 
 # Save the plot to a file.
