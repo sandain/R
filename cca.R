@@ -147,7 +147,7 @@ drawArrows <- function (
 
 # Draw the legend on the plot.
 drawLegend <- function (
-  x, y, species, categories, cex = 1.0, ncol = 1
+  x, y, species, categories, cex = 1.0, pt.cex = 1.0, ncol = 1
 ) {
   # Grab a list of the unique community categories for the
   # legend.
@@ -184,6 +184,7 @@ drawLegend <- function (
     col = as.vector (draw.leg$col),
     pt.bg = as.vector (draw.leg$bg),
     cex = cex,
+    pt.cex = pt.cex,
     ncol = ncol
   )
 }
@@ -212,8 +213,15 @@ my.species.plot <- function (
   if (inherits (x, c ("cca"))) {
     draw.scores <- scores (x)
     draw.species <- draw.scores$species
-    draw.xlab <- colnames (draw.species)[1]
-    draw.ylab <- colnames (draw.species)[2]
+    if (length (x$CCA$eig) > 1) {
+      # Calculate the percent contribution of each axes.
+      draw.percent <- x$CCA$eig / x$CCA$tot.chi
+      draw.xlab <- sprintf ("%s: %.2f%%", names (x$CCA$eig)[1], draw.percent[1]*100)
+      draw.ylab <- sprintf ("%s: %.2f%%", names (x$CCA$eig)[2], draw.percent[2]*100)
+    } else {
+      draw.xlab <- names (x$CCA$eig)[1]
+      draw.ylab <- names (x$CA$eig)[1]
+    }
   } else if (inherits (x, c ("mfso"))) {
     draw.species <- wascores (x$mu, taxa)
     draw.xlab <- names (x$data)[1]
@@ -244,13 +252,14 @@ my.species.plot <- function (
       lg.y,
       draw.species,
       categories,
-      cex = 0.8
+      cex = 0.8,
+      pt.cex = 1.2
     )
   }
   # Draw the arrows for the constraining variables on plot.
   if (inherits (x, c ("cca"))) {
     if (is.null (draw.scores$biplot)) {
-      draw.scores$biplot <- scores(x, c (1,2), "bp", scaling)
+      draw.scores$biplot <- scores (x, c (1,2), "bp", scaling)
     }
     drawArrows (draw.scores$biplot, col = 'blue', cex = cex)
   }

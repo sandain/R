@@ -77,12 +77,12 @@ if (grepl (".pdf$", outputFile)) pdf (outputFile)
 if (grepl (".svg$", outputFile)) svg (outputFile)
 if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
 
-p1 <- ggplot() + geom_col(data=a, aes(x=category, y=chao1)) + geom_dotplot(data=d, aes(x=category, y=chao1), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
-p2 <- ggplot() + geom_col(data=a, aes(x=category, y=shannon)) + geom_dotplot(data=d, aes(x=category, y=shannon), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
-p3 <- ggplot() + geom_col(data=a, aes(x=category, y=simpson)) + geom_dotplot(data=d, aes(x=category, y=simpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
-p4 <- ggplot() + geom_col(data=a, aes(x=category, y=invsimpson)) + geom_dotplot(data=d, aes(x=category, y=invsimpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15)
+p1 <- ggplot() + geom_col(data=a, aes(x=category, y=chao1)) + geom_dotplot(data=d, aes(x=category, y=chao1), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
+p2 <- ggplot() + geom_col(data=a, aes(x=category, y=shannon)) + geom_dotplot(data=d, aes(x=category, y=shannon), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
+p3 <- ggplot() + geom_col(data=a, aes(x=category, y=simpson)) + geom_dotplot(data=d, aes(x=category, y=simpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
+p4 <- ggplot() + geom_col(data=a, aes(x=category, y=invsimpson)) + geom_dotplot(data=d, aes(x=category, y=invsimpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
 
-grid.arrange (p1, p2, p3, p4, nrow = 2)
+grid.arrange (p1, p2, p3, p4, nrow = 2, top = title)
 
 # Finish the script.
 q ()

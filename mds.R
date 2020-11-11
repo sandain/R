@@ -6,7 +6,7 @@ suppressPackageStartupMessages (
 
 usage <- "Usage: <Data File> <Environment File> <Environmental Variable> <Output File> <Title>"
 
-colors <- c ("red", "blue", "green", "purple", "orange", "pink", "magenta")
+colors <- c ("red", "blue", "green", "purple", "orange", "pink", "magenta", "cyan", "gold")
 
 # Load the command line arguments.
 args <- commandArgs (trailingOnly = TRUE)
@@ -29,7 +29,7 @@ data <- read.table (dataFile, header = TRUE)
 env <- read.table (envFile, header = TRUE)
 
 # Remove rows and columns with no data.
-data <- data[,intersect (rownames(env), colnames(data)),drop = FALSE]
+data <- data[, intersect (rownames (env), colnames (data)), drop = FALSE]
 data <- data[rowSums (data) > 0,,drop = FALSE]
 data <- data[, colSums (data) > 0,drop = FALSE]
 env <- env[colnames (data),, drop = FALSE]
@@ -53,8 +53,10 @@ data.mds <- metaMDS (data)
 # Create an empty plot sized to fit the MDS output.
 data.plot <- plot (data.mds, type="n", main=title)
 
-# Draw ovals around each environmental variable.
-ordiellipse (data.plot, env[,envVar], kind="se", conf=0.99)
+# Draw ovals around the mean of each environmental variable.
+for (i in 1: length (envGroups)) {
+  ordiellipse (data.plot, env[,envVar], kind="se", conf=0.99, col=colors[i], show.groups = envGroups[i], alpha=75, draw="polygon")
+}
 
 # Draw bounding boxes around each environmental variable.
 #ordihull (data.plot, env[,envVar])
@@ -63,16 +65,16 @@ ordiellipse (data.plot, env[,envVar], kind="se", conf=0.99)
 for (i in 1: length (envGroups)) {
   x <- data.plot$sites[env[,envVar] == envGroups[i],1]
   y <- data.plot$sites[env[,envVar] == envGroups[i],2]
-  bg <- i %% (length (colors)+1)
+  bg <- i %% (length (colors) + 1)
   if (i == length (colors)) bg <- bg + 1
   points (x=x, y=y, col="black", bg=colors[bg], pch=21)
 }
 
 # Add labels to the sites.
-text (data.plot$sites, labels=rownames(data.plot$sites), pos=4)
+text (data.plot$sites, labels=rownames (data.plot$sites), pos=4)
 
 # Add a legend.
-legend ("topright", legend=envGroups, col=rep("black",3), pt.bg=colors, pch=21)
+legend ("topleft", legend=envGroups, col=rep ("black",3), pt.cex=1.5, pt.bg=colors, pch=21)
 
 # Finish the script.
 q ()
