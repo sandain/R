@@ -53,9 +53,31 @@ data.mds <- metaMDS (data)
 # Create an empty plot sized to fit the MDS output.
 data.plot <- plot (data.mds, type="n", main=title)
 
-# Draw ovals around the mean of each environmental variable.
+# Figure out environmental group colors.
+col <- rep ('#000000', length (envGroups))
+bg <- rep ('#000000', length (envGroups))
+pch <- rep (21, length (envGroups))
 for (i in 1: length (envGroups)) {
-  ordiellipse (data.plot, env[,envVar], kind="se", conf=0.99, col=colors[i], show.groups = envGroups[i], alpha=75, draw="polygon")
+  if (! is.null (env[env[,envVar] == envGroups[i],'col'][1])) {
+    col[i] <- as.vector (env[env[,envVar] == envGroups[i],'col'][1])
+  }
+  if (! is.null (env[env[,envVar] == envGroups[i],'bg'][1])) {
+    bg[i] <- as.vector (env[env[,envVar] == envGroups[i],'bg'][1])
+  } else {
+    ci <- i %% length (colors)
+    if (ci == 0) ci <- length (colors)
+    bg[i] <- colors[ci]
+  }
+  if (! is.null (env[env[,envVar] == envGroups[i],'pch'][1])) {
+    pch[i] <- as.vector (env[env[,envVar] == envGroups[i],'pch'][1])
+  }
+}
+
+# Draw ellipses around the mean of each environmental variable.
+for (i in 1: length (envGroups)) {
+  # Don't draw an ellipse if there are less than three points.
+  if (sum (env[,envVar] == envGroups[i]) < 3) next
+  ordiellipse (data.plot, env[,envVar], kind="se", conf=0.99, col=bg[i], show.groups = envGroups[i], alpha=75, draw="polygon")
 }
 
 # Draw bounding boxes around each environmental variable.
@@ -65,16 +87,14 @@ for (i in 1: length (envGroups)) {
 for (i in 1: length (envGroups)) {
   x <- data.plot$sites[env[,envVar] == envGroups[i],1]
   y <- data.plot$sites[env[,envVar] == envGroups[i],2]
-  bg <- i %% (length (colors) + 1)
-  if (i == length (colors)) bg <- bg + 1
-  points (x=x, y=y, col="black", bg=colors[bg], pch=21)
+  points (x=x, y=y, col=col[i], bg=bg[i], pch=pch[i])
 }
 
 # Add labels to the sites.
 text (data.plot$sites, labels=rownames (data.plot$sites), pos=4)
 
 # Add a legend.
-legend ("topleft", legend=envGroups, col=rep ("black",3), pt.cex=1.5, pt.bg=colors, pch=21)
+legend ("topleft", legend=envGroups, col='#000000', pt.cex=1.5, pt.bg=bg, pch=pch)
 
 # Finish the script.
 q ()
