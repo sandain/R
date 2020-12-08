@@ -27,14 +27,8 @@ data <- data[, colSums (data) > 0,drop = FALSE]
 env <- na.omit (env[colnames (data),])
 
 envGroups <- env[! duplicated (env[,envVar]), envVar]
-data.env <- matrix (nrow = nrow (data), ncol = length (envGroups))
-rownames (data.env) <- rownames (data)
-colnames (data.env) <- envGroups
-for (i in 1: length (envGroups)) {
-  data.env[,envGroups[i]] <- rowSums (data[,env[,envVar] == envGroups[i], drop=FALSE])
-}
 
-ac <- combn (colnames (data.env), 2)
+ac <- combn (envGroups, 2)
 
 for (i in 1:ncol (ac)) {
   print (paste (ac[,i], collapse = "&"))
