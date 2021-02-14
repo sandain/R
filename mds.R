@@ -73,6 +73,9 @@ for (i in 1: length (envGroups)) {
   }
 }
 
+# Add a legend.
+legend ("topleft", legend=envGroups, col='#000000', pt.cex=1.5, pt.bg=bg, pch=pch)
+
 # Draw ellipses around the mean of each environmental variable.
 for (i in 1: length (envGroups)) {
   # Don't draw an ellipse if there are less than three points.
@@ -92,9 +95,6 @@ for (i in 1: length (envGroups)) {
 
 # Add labels to the sites.
 text (data.plot$sites, labels=rownames (data.plot$sites), pos=4)
-
-# Add a legend.
-legend ("topleft", legend=envGroups, col='#000000', pt.cex=1.5, pt.bg=bg, pch=pch)
 
 # Finish the script.
 q ()
