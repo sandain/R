@@ -20,18 +20,6 @@ data <- read.table (dataFile, header = TRUE)
 # Make sure the data is formated as a matrix.
 data <- as.matrix (data)
 
-# Convert each column into percentages.
-data <- t (t (data) / colSums (data))
-
-# Cluster data using complete linkage.
-data.dist <- dist (data)
-data.cluster <- hclust (data.dist, method="complete")
-
-# Create a dendrogram of the clustered rows.
-data.rowv <- rowMeans (data, na.rm=TRUE)
-data.dendrogram <- as.dendrogram (data.cluster)
-data.dendrogram <- reorder (data.dendrogram, data.rowv)
-
 # Save the plot to a file.
 if (grepl (".png$", outputFile)) png (outputFile)
 if (grepl (".pdf$", outputFile)) pdf (outputFile)
@@ -39,7 +27,8 @@ if (grepl (".svg$", outputFile)) svg (outputFile)
 if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
 
 # Draw the heat map.
-heatmap (data, Rowv=data.dendrogram, Colv=NA, labRow=NA)
+heatmap (data[nrow (data):1,], Rowv=NA, Colv=NA, margins=c(10,30), col=colorRampPalette (c ("white","red"))(100), scale="none")
+legend (x="topleft", legend=c("min", "ave", "max"), fill=colorRampPalette (c ("white","red"))(3))
 
 # Finish the script.
 q ()
