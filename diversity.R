@@ -4,19 +4,20 @@ suppressPackageStartupMessages (library (vegan))
 suppressPackageStartupMessages (library (ggplot2))
 suppressPackageStartupMessages (library (gridExtra))
 
-usage <- "Usage: <Data File> <Environment File> <Environmental Variable> <Output File> <Title>"
+usage <- "Usage: <Data File> <Environment File> <Environmental Variable> <Output File> <Title> <Minimum Size>"
 
 # Load the command line arguments.
 args <- commandArgs (trailingOnly = TRUE)
 
 # Verify the command line arguments.
-if (length (args) < 5) stop (usage)
+if (length (args) < 6) stop (usage)
 
 dataFile <- args[1]
 envFile <- args[2]
 envVar <- args[3]
 outputFile <- args[4]
 title <- args[5]
+minimum <- as.numeric (args[6])
 
 # Verify the data files exist.
 if (! file.exists (dataFile)) stop ("Data file not found.")
@@ -29,11 +30,14 @@ env <- read.table (envFile, header = TRUE)
 # Remove rows and columns with no data.
 data <- data[, intersect (rownames (env), colnames (data)), drop = FALSE]
 data <- data[rowSums (data) > 0,,drop = FALSE]
-data <- data[, colSums (data) > 0,drop = FALSE]
+data <- data[, colSums (data) > minimum,drop = FALSE]
 env <- env[colnames (data),, drop = FALSE]
 
 # The main data file comes in transposed from what we need.
 data <- t (data)
+
+# Rarefy data.
+data <- rrarefy (data, min (rowSums (data)))
 
 # Figure out the groups in the environment.
 envGroups <- env[! duplicated (env[,envVar]), envVar]
