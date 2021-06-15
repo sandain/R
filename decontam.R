@@ -34,10 +34,20 @@ data <- data[, colSums (data) > 0,drop = FALSE]
 env <- env[colnames (data),, drop = FALSE]
 
 # Swap zero values with a real small value instead.
-env[env[,quantVar] == 0, quantVar] <- 0.000001
+if (quantVar != "NA") env[env[,quantVar] == 0, quantVar] <- 0.000001
 
-# Use the decontam combined method to detect contaminants.
-contaminants <- isContaminant (t (data), conc=env[,quantVar], neg=env[,ctrlVar], method="combined")
+if (ctrlVar != "NA" && quantVar != "NA") {
+  # Use the decontam combined method to detect contaminants.
+  contaminants <- isContaminant (t (data), conc=env[,quantVar], neg=env[,ctrlVar], method="combined")
+} else if (ctrlVar != "NA") {
+  # Use the decontam prevalence method to detect contaminants.
+  contaminants <- isContaminant (t (data), neg=env[,ctrlVar], method="prevalence")
+} else if (quantVar != "NA") {
+  # Use the decontam frequency method to detect contaminants.
+  contaminants <- isContaminant (t (data), conc=env[,quantVar], method="frequency")
+} else {
+  stop ("Both Control Variable and DNA Quantitation Variable set to NA.")
+}
 
 # Output the output file and the contaminants file.
 write.table (data[contaminants$contaminant == FALSE,], file=outputFile, sep="\t", eol = "\n", col.names=NA)
