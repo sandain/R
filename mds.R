@@ -40,6 +40,7 @@ data <- t (data)
 # Figure out the groups in the environment.
 envGroups <- env[! duplicated (env[,envVar]), envVar]
 envGroups <- envGroups[! is.na (envGroups)]
+envGroups <- sort (envGroups)
 
 # Save the plot to a file.
 if (grepl (".png$", outputFile)) png (outputFile)
