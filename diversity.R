@@ -3,6 +3,7 @@
 suppressPackageStartupMessages (library (vegan))
 suppressPackageStartupMessages (library (ggplot2))
 suppressPackageStartupMessages (library (gridExtra))
+suppressPackageStartupMessages (library (egg))
 
 usage <- "Usage: <Data File> <Environment File> <Environmental Variable> <Output File> <Title> <Minimum Size>"
 
@@ -49,14 +50,12 @@ d <- data.frame (
   category = env[,envVar],
   chao1 = double (nrow (data)),
   shannon = double (nrow (data)),
-  simpson = double (nrow (data)),
-  invsimpson = double (nrow (data))
+  simpson = double (nrow (data))
 )
 for (i in 1: nrow (data)) {
   d$chao1[i] <- estimateR (data[i,])[2]
   d$shannon[i] <- diversity (data[i,], index = "shannon")
   d$simpson[i] <- diversity (data[i,], index = "simpson")
-  d$invsimpson[i] <- diversity (data[i,], index = "invsimpson")
 }
 
 # Calculate the average of the diversity indicies.
@@ -65,28 +64,37 @@ a <- data.frame (
   category = envGroups,
   chao1 = double (length (envGroups)),
   shannon = double (length (envGroups)),
-  simpson = double (length (envGroups)),
-  invsimpson = double (length (envGroups))
+  simpson = double (length (envGroups))
 )
 for (i in 1: length (envGroups)) {
   a$chao1[i] <- mean(d[d[,"category"] == envGroups[i], "chao1"])
   a$shannon[i] <- mean(d[d[,"category"] == envGroups[i], "shannon"])
   a$simpson[i] <- mean(d[d[,"category"] == envGroups[i], "simpson"])
-  a$invsimpson[i] <- mean(d[d[,"category"] == envGroups[i], "invsimpson"])
 }
 
 # Save the plot to a file.
-if (grepl (".png$", outputFile)) png (outputFile)
-if (grepl (".pdf$", outputFile)) pdf (outputFile)
-if (grepl (".svg$", outputFile)) svg (outputFile)
-if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw")
+if (grepl (".png$", outputFile)) png (outputFile, width=216, height=504)
+if (grepl (".pdf$", outputFile)) pdf (outputFile, width=216, height=504)
+if (grepl (".svg$", outputFile)) svg (outputFile, width=3, height=7)
+if (grepl (".tif$", outputFile)) tiff (outputFile, compression="lzw", width=216, height=504)
 
-p1 <- ggplot() + geom_col(data=a, aes(x=category, y=chao1)) + geom_dotplot(data=d, aes(x=category, y=chao1), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
-p2 <- ggplot() + geom_col(data=a, aes(x=category, y=shannon)) + geom_dotplot(data=d, aes(x=category, y=shannon), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
-p3 <- ggplot() + geom_col(data=a, aes(x=category, y=simpson)) + geom_dotplot(data=d, aes(x=category, y=simpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
-p4 <- ggplot() + geom_col(data=a, aes(x=category, y=invsimpson)) + geom_dotplot(data=d, aes(x=category, y=invsimpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) + theme_grey(base_size = 15) + theme(axis.title.x=element_blank(),axis.text.x = element_text(angle=90, hjust=1))
+p1 <- ggplot () +
+  geom_col (data=a, aes (x=category, y=chao1)) +
+  geom_dotplot (data=d, aes (x=category, y=chao1), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) +
+  theme_grey (base_size = 15) +
+  theme (axis.title.x=element_blank (),axis.text.x = element_blank ())
+p2 <- ggplot () +
+  geom_col (data=a, aes (x=category, y=shannon)) +
+  geom_dotplot (data=d, aes (x=category, y=shannon), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) +
+  theme_grey (base_size = 15) +
+  theme (axis.title.x=element_blank (),axis.text.x = element_blank ())
+p3 <- ggplot () +
+  geom_col (data=a, aes (x=category, y=simpson)) +
+  geom_dotplot (data=d, aes (x=category, y=simpson), binaxis='y', stackdir='center', stackratio=1.5, dotsize=.5) +
+  theme_grey (base_size = 15) +
+  theme (axis.title.x=element_blank (),axis.text.x = element_text(angle=90, hjust=1))
 
-grid.arrange (p1, p2, p3, p4, nrow = 2, top = title)
+ggarrange (p1, p2, p3, nrow = 3, top = title)
 
 # Finish the script.
 q ()
