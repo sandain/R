@@ -30,15 +30,23 @@ env <- read.table (envFile, header = TRUE)
 
 # Remove rows and columns with no data.
 data <- data[, intersect (rownames (env), colnames (data)), drop = FALSE]
-data <- data[rowSums (data) > 0,,drop = FALSE]
-data <- data[, colSums (data) > minimum,drop = FALSE]
+data <- data[rowSums (data) > 0,, drop = FALSE]
+
+# Remove columns with sums less than minimum.
+cols <- colnames (data)[colSums (data) < minimum]
+if (length (cols) > 0) {
+  message (cat ("Insufficient data to include:\n", paste (cols, '(', colSums (data[,cols,drop=FALSE]), ')\n')))
+  data <- data[, colSums (data) >= minimum, drop = FALSE]
+}
+
+# Grab the environmental information.
 env <- env[colnames (data),, drop = FALSE]
 
 # The main data file comes in transposed from what we need.
 data <- t (data)
 
 # Rarefy data.
-data <- rrarefy (data, min (rowSums (data)))
+data <- rrarefy (data, minimum)
 
 # Figure out the groups in the environment.
 envGroups <- env[! duplicated (env[,envVar]), envVar]
